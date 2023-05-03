@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "docs": "typedoc --options typedoc.cjs src",
+    "docs": "typedoc --options typedoc.cjs",
     "test": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' mocha && npm run test:jest",
     "test:jest": "NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest",
     "test:ci": "c8 npm run test",

@@ -11,4 +11,5 @@ module.exports = {
     inherited: true,
     external: true,
   },
+  entryPoints: ['src/auth', 'src/management/managers.ts', 'src/management/models.ts'],
 };
