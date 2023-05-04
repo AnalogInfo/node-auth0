@@ -1,0 +1,181 @@
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
+exports.Passwordless = void 0;
+const runtime_1 = require('../runtime');
+const BaseAuthApi_1 = require('./BaseAuthApi');
+const OAuth_1 = require('./OAuth');
+/**
+ * Handles passwordless flows using Email and SMS.
+ */
+class Passwordless extends BaseAuthApi_1.BaseAuthAPI {
+  oauth;
+  constructor(configuration) {
+    super(configuration);
+    this.oauth = new OAuth_1.OAuth(configuration);
+  }
+  /**
+   * Start passwordless flow sending an email.
+   *
+   * Given the user `email` address, it will send an email with:
+   *
+   * <ul>
+   *   <li>A link (default, `send:"link"`). You can then authenticate with this
+   *     user opening the link and he will be automatically logged in to the
+   *     application. Optionally, you can append/override parameters to the link
+   *     (like `scope`, `redirect_uri`, `protocol`, `response_type`, etc.) using
+   *     `authParams` object.
+   *   </li>
+   *   <li>
+   *     A verification code (`send:"code"`). You can then authenticate with
+   *     this user using the `/oauth/token` endpoint specifying `email` as
+   *     `username` and `code` as `password`.
+   *   </li>
+   * </ul>
+   *
+   * See: https://auth0.com/docs/api/authentication#get-code-or-link
+   *
+   * @example
+   * ```js
+   * const auth0 = new AuthenticationApi({
+   *    domain: 'my-domain.auth0.com',
+   *    clientId: 'myClientId',
+   *    clientSecret: 'myClientSecret'
+   * });
+   *
+   * await auth0.passwordless.sendEmail({
+   *   email: '{EMAIL}',
+   *   send: 'link',
+   *   authParams: {} // Optional auth params.
+   * });
+   * ```
+   */
+  async sendEmail(bodyParameters, initOverrides) {
+    (0, runtime_1.validateRequiredRequestParams)(bodyParameters, ['email']);
+    const response = await this.request(
+      {
+        path: '/passwordless/start',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: await this.addClientAuthentication(
+          { client_id: this.clientId, connection: 'email', ...bodyParameters },
+          false
+        ),
+      },
+      initOverrides
+    );
+    return runtime_1.VoidApiResponse.fromResponse(response);
+  }
+  /**
+   * Start passwordless flow sending an SMS.
+   *
+   * Given the user `phone_number`, it will send a SMS message with a
+   * verification code. You can then authenticate with this user using the
+   * `/oauth/token` endpoint specifying `phone_number` as `username` and `code` as
+   * `password`:
+   *
+   * See: https://auth0.com/docs/api/authentication#get-code-or-link
+   *
+   * @example
+   * ```js
+   * const auth0 = new AuthenticationApi({
+   *    domain: 'my-domain.auth0.com',
+   *    clientId: 'myClientId',
+   *    clientSecret: 'myClientSecret'
+   * });
+   *
+   * await auth0.passwordless.sendSMS({
+   *   phone_number: '{PHONE}'
+   * });
+   * ```
+   */
+  async sendSMS(bodyParameters, initOverrides) {
+    (0, runtime_1.validateRequiredRequestParams)(bodyParameters, ['phone_number']);
+    const response = await this.request(
+      {
+        path: '/passwordless/start',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: await this.addClientAuthentication(
+          { client_id: this.clientId, connection: 'sms', ...bodyParameters },
+          false
+        ),
+      },
+      initOverrides
+    );
+    return runtime_1.VoidApiResponse.fromResponse(response);
+  }
+  /**
+   * Once you have a verification code, use this endpoint to login the user with their email and verification code.
+   *
+   * @example
+   * ```js
+   * const auth0 = new AuthenticationApi({
+   *    domain: 'my-domain.auth0.com',
+   *    clientId: 'myClientId',
+   *    clientSecret: 'myClientSecret'
+   * });
+   *
+   * await auth0.passwordless.loginWithEmail({
+   *   email: 'foo@example.com',
+   *   code: 'ABC123'
+   * });
+   * ```
+   */
+  async loginWithEmail(bodyParameters, initOverrides) {
+    (0, runtime_1.validateRequiredRequestParams)(bodyParameters, ['email', 'code']);
+    const { email: username, code: otp, ...otherParams } = bodyParameters;
+    return this.oauth.grant(
+      'http://auth0.com/oauth/grant-type/passwordless/otp',
+      await this.addClientAuthentication(
+        {
+          username,
+          otp,
+          realm: 'email',
+          ...otherParams,
+        },
+        false
+      ),
+      initOverrides
+    );
+  }
+  /**
+   * Once you have a verification code, use this endpoint to login the user with their phone number and verification code.
+   *
+   * @example
+   * ```js
+   * const auth0 = new AuthenticationApi({
+   *    domain: 'my-domain.auth0.com',
+   *    clientId: 'myClientId',
+   *    clientSecret: 'myClientSecret'
+   * });
+   *
+   * await auth0.passwordless.loginWithSMS({
+   *   phone_number: '0777777777',
+   *   code: 'ABC123'
+   * });
+   * ```
+   */
+  async loginWithSMS(bodyParameters, initOverrides) {
+    (0, runtime_1.validateRequiredRequestParams)(bodyParameters, ['phone_number', 'code']);
+    const { phone_number: username, code: otp, ...otherParams } = bodyParameters;
+    return this.oauth.grant(
+      'http://auth0.com/oauth/grant-type/passwordless/otp',
+      await this.addClientAuthentication(
+        {
+          username,
+          otp,
+          realm: 'sms',
+          ...otherParams,
+        },
+        false
+      ),
+      initOverrides
+    );
+  }
+}
+exports.Passwordless = Passwordless;
+//# sourceMappingURL=Passwordless.js.map
