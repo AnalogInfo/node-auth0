@@ -1,4 +1,4 @@
-import pkg from '../package.json' assert { type: 'json' };
+// import pkg from '../package.json' assert { type: 'json' };
 /**
  * Given a JSON string, convert it to its base64 representation.
  *
@@ -19,7 +19,7 @@ export const jsonToBase64 = (json) => {
  */
 export const generateClientInfo = () => ({
   name: 'node-auth0',
-  version: pkg.version,
+  version: '3.3.0', // pkg.version,
   env: {
     node: process.version.replace('v', ''),
   },

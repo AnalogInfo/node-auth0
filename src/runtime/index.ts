@@ -1,7 +1,8 @@
-import fetch, { RequestInit, RequestInfo, Response, Blob, FormData } from 'node-fetch';
+import { default as FormData } from 'form-data';
+import fetch, { RequestInit, RequestInfo, Response, Blob, Headers } from 'node-fetch';
 import { RetryConfiguration, retry } from './retry';
 
-export { Blob, FormData } from 'node-fetch';
+export { Blob, FormData };
 
 export interface Configuration {
   baseUrl: string; // override base path

@@ -1,17 +1,31 @@
 {
+  // "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
     "allowJs": true,
-    "target": "ES2017",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
     "declarationDir": "./dist/typings",
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "module": "ESNext",
-    "strict": true
+    "module": "CommonJS",
+    "strict": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+    // "noImplicitThis": true,
+    // "alwaysStrict": true,
+    // "noFallthroughCasesInSwitch": false,
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+    "lib": ["es2022", "dom", "ES2021.String"],
+    // "lib": ["es2022"],
+    "target": "es2022",
+
+    "rootDir": "./src",
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"]
 }
